@@ -362,14 +362,26 @@ ReactWork.prototype._onCommit = function(): void {
   }
 };
 
+/**
+ * [Comment]
+ * 将 fiberRoot 挂载到 _internalRoot 属性上
+ *
+ * @param {DOMContainer} container
+ * @param {boolean} isConcurrent 是否开启 React 异步模式，目前是默认关闭的
+ * @param {boolean} hydrate
+ */
 function ReactRoot(
   container: DOMContainer,
   isConcurrent: boolean,
   hydrate: boolean,
 ) {
   const root = createContainer(container, isConcurrent, hydrate);
-  this._internalRoot = root;
+  this._internalRoot = root; // FiberRoot
 }
+/**
+ * [comment]
+ *
+ */
 ReactRoot.prototype.render = function(
   children: ReactNodeList,
   callback: ?() => mixed,
@@ -492,6 +504,14 @@ setBatchingImplementation(
 
 let warnedAboutHydrateAPI = false;
 
+/**
+ * 返回 ReactRoot
+ * 1. 去掉根节点的子元素
+ * 2. 创建一个 ReactRoot 并返回
+ * @param {DOMContainer} container
+ * @param {boolean} forceHydrate
+ * @returns {Root}
+ */
 function legacyCreateRootFromDOMContainer(
   container: DOMContainer,
   forceHydrate: boolean,
@@ -551,7 +571,7 @@ function legacyRenderSubtreeIntoContainer(
   // TODO: Without `any` type, Flow says "Property cannot be accessed on any
   // member of intersection type." Whyyyyyy.
   let root: Root = (container._reactRootContainer: any);
-  // 挂载到 window 上便于debug
+  // [DEBUG] 挂载到 window 上便于debug
   window.root = container;
   if (!root) {
     // Initial mount
@@ -575,6 +595,7 @@ function legacyRenderSubtreeIntoContainer(
           callback,
         );
       } else {
+        // 第一渲染会走到这里
         root.render(children, callback);
       }
     });
@@ -671,7 +692,7 @@ const ReactDOM: Object = {
       callback,
     );
   },
-
+  // [ReactDom#render] 整个 React 的入口，梦开始的地方
   render(
     element: React$Element<any>,
     container: DOMContainer,
@@ -691,11 +712,12 @@ const ReactDOM: Object = {
       );
     }
     return legacyRenderSubtreeIntoContainer(
+      // 父容器，因为 ReactDom.render 第一次进来，所以没有父容器
       null,
-      element,
+      element, // 要被渲染的 vDom
       container,
-      false,
-      callback,
+      false, // 区分是不是服务端渲染的标志：hydrate
+      callback, // 显而易见的，ReactDom.render 的第三个参数，渲染结束以后的回调函数
     );
   },
 

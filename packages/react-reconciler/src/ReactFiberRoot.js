@@ -82,6 +82,8 @@ type BaseFiberRootProperties = {|
   // TODO: Lift this into the renderer
   firstBatch: Batch | null,
   // Linked-list of roots
+  // 每有一次更新就更新对应的 Fiber 加入到这个链表里
+  // 每次从
   nextScheduledRoot: FiberRoot | null,
 |};
 

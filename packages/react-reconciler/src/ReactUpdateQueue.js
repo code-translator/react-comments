@@ -218,7 +218,8 @@ function appendUpdateToQueue<State>(
   }
 }
 /**
- * 将update到 fiber 和 fiber.alternate 的队尾
+ * [comment]
+ * 将 update 到 fiber 和 fiber.alternate 的队尾
  *
  * @export
  * @template State
@@ -346,6 +347,18 @@ function ensureWorkInProgressQueueIsAClone<State>(
   return queue;
 }
 
+/**
+ * 从 Update 里面去更新 State
+ *
+ * @template State
+ * @param {Fiber} workInProgress
+ * @param {UpdateQueue<State>} queue
+ * @param {Update<State>} update
+ * @param {State} prevState
+ * @param {*} nextProps
+ * @param {*} instance
+ * @returns {*}
+ */
 function getStateFromUpdate<State>(
   workInProgress: Fiber,
   queue: UpdateQueue<State>,
@@ -421,6 +434,17 @@ function getStateFromUpdate<State>(
   return prevState;
 }
 
+/**
+ * 遍历 updateQueue，将 state 的更新累积合并起来
+ *
+ * @export
+ * @template State
+ * @param {Fiber} workInProgress
+ * @param {UpdateQueue<State>} queue
+ * @param {*} props
+ * @param {*} instance
+ * @param {ExpirationTime} renderExpirationTime
+ */
 export function processUpdateQueue<State>(
   workInProgress: Fiber,
   queue: UpdateQueue<State>,

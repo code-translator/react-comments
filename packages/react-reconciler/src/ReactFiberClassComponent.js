@@ -493,6 +493,15 @@ function checkClassInstance(workInProgress: Fiber, ctor: any, newProps: any) {
   }
 }
 
+/**
+ * 在 instance 上挂载 classComponentUpdater
+ *
+ * 将 instance 作为 key， workInProgress(Fiber) 作为 value 放入到 Map 里，
+ * 方便在 setState 时根据 instance 找到对应的 Fiber
+ *
+ * @param {Fiber} workInProgress
+ * @param {object} instance
+ */
 function adoptClassInstance(workInProgress: Fiber, instance: any): void {
   instance.updater = classComponentUpdater;
   workInProgress.stateNode = instance;
@@ -512,6 +521,7 @@ function constructClassInstance(
   let isLegacyContextConsumer = false;
   let unmaskedContext = emptyContextObject;
   let context = null;
+  // [comment] 获取 contextType
   const contextType = ctor.contextType;
 
   if (__DEV__) {
@@ -580,6 +590,7 @@ function constructClassInstance(
     }
   }
 
+  // 实例化 ClassComponent
   const instance = new ctor(props, context);
   const state = (workInProgress.memoizedState =
     instance.state !== null && instance.state !== undefined
@@ -608,6 +619,7 @@ function constructClassInstance(
     // If new component APIs are defined, "unsafe" lifecycles won't be called.
     // Warn about these lifecycles if they are present.
     // Don't warn about react-lifecycles-compat polyfilled methods though.
+    // [comment] 检测将要被废弃的生命周期钩子
     if (
       typeof ctor.getDerivedStateFromProps === 'function' ||
       typeof instance.getSnapshotBeforeUpdate === 'function'
@@ -744,6 +756,14 @@ function callComponentWillReceiveProps(
 }
 
 // Invokes the mount life-cycles on a previously never rendered instance.
+/**
+ * 处理更新队列
+ *
+ * @param {Fiber} workInProgress
+ * @param {*} ctor
+ * @param {*} newProps
+ * @param {ExpirationTime} renderExpirationTime
+ */
 function mountClassInstance(
   workInProgress: Fiber,
   ctor: any,
@@ -802,6 +822,7 @@ function mountClassInstance(
     }
   }
 
+  // [comment] 更新 State
   let updateQueue = workInProgress.updateQueue;
   if (updateQueue !== null) {
     processUpdateQueue(
@@ -814,6 +835,7 @@ function mountClassInstance(
     instance.state = workInProgress.memoizedState;
   }
 
+  // [comment] 调用 getDerivedStateFromProps
   const getDerivedStateFromProps = ctor.getDerivedStateFromProps;
   if (typeof getDerivedStateFromProps === 'function') {
     applyDerivedStateFromProps(
@@ -827,6 +849,8 @@ function mountClassInstance(
 
   // In order to support react-lifecycles-compat polyfilled components,
   // Unsafe lifecycles should not be invoked for components using the new APIs.
+  // [comment][Trans] 如果新的生命周期钩子 getDerivedStateFromProps 已经存在，那
+  // 么就不会调用 componentWillMount 生命周期钩子
   if (
     typeof ctor.getDerivedStateFromProps !== 'function' &&
     typeof instance.getSnapshotBeforeUpdate !== 'function' &&

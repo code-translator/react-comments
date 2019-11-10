@@ -1848,7 +1848,13 @@ export function warnIfNotCurrentlyBatchingInDev(fiber: Fiber): void {
     }
   }
 }
-
+/**
+ * 开始调度更新
+ *
+ * @param {Fiber} fiber
+ * @param {ExpirationTime} expirationTime
+ * @returns
+ */
 function scheduleWork(fiber: Fiber, expirationTime: ExpirationTime) {
   // 更新到根节点的过期时间（成立，提高优先级）          .
   const root = scheduleWorkToRoot(fiber, expirationTime);
@@ -2113,6 +2119,12 @@ function requestWork(root: FiberRoot, expirationTime: ExpirationTime) {
   }
 }
 
+/**
+ * 将 FiberRoot
+ *
+ * @param {FiberRoot} root
+ * @param {ExpirationTime} expirationTime
+ */
 function addRootToSchedule(root: FiberRoot, expirationTime: ExpirationTime) {
   // Add the root to the schedule.
   // Check if this root is already part of the schedule.
@@ -2500,6 +2512,17 @@ function batchedUpdates<A, R>(fn: (a: A) => R, a: A): R {
 
 // TODO: Batching should be implemented at the renderer level, not inside
 // the reconciler.
+/**
+ * [comment]
+ *
+ * ??
+ *
+ * @template A
+ * @template R
+ * @param {(a: A) => R} fn
+ * @param {A} a
+ * @returns {R}
+ */
 function unbatchedUpdates<A, R>(fn: (a: A) => R, a: A): R {
   if (isBatchingUpdates && !isUnbatchingUpdates) {
     isUnbatchingUpdates = true;

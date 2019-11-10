@@ -139,6 +139,7 @@ function scheduleRootUpdate(
   const update = createUpdate(expirationTime);
   // Caution: React DevTools currently depends on this property
   // being called "element".
+  // 不同类型 payload 的对应了不同的更新路劲，element 就是就是渲染整个 vDom
   update.payload = {element};
 
   callback = callback === undefined ? null : callback;

@@ -108,6 +108,7 @@ export type Fiber = {|
   type: any,
 
   // The local state associated with this fiber.
+  // 对于 HostRoot 是 FiberRoot
   // 对于 vDom 对应的是真实 DOM
   // clas component new 以后的实例
   stateNode: any,
@@ -171,6 +172,7 @@ export type Fiber = {|
   expirationTime: ExpirationTime,
 
   // This is used to quickly determine if a subtree has no pending changes.
+  // [comment][trans] 如果子树有更新，就会设置父节点的 childExpirationTime
   childExpirationTime: ExpirationTime,
 
   // This is a pooled version of a Fiber. Every fiber that gets updated will

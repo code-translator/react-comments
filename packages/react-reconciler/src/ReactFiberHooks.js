@@ -371,7 +371,7 @@ export function renderWithHooks(
         ? HooksDispatcherOnMount
         : HooksDispatcherOnUpdate;
   }
-
+  // [comment] 调用 function Component
   let children = Component(props, refOrContext);
 
   if (didScheduleRenderPhaseUpdate) {
@@ -381,6 +381,7 @@ export function renderWithHooks(
 
       // Start over from the beginning of the list
       nextCurrentHook = current !== null ? current.memoizedState : null;
+      // firstWorkInProgressHook 指向
       nextWorkInProgressHook = firstWorkInProgressHook;
 
       currentHook = null;

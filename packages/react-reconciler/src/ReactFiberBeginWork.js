@@ -148,13 +148,24 @@ if (__DEV__) {
   didWarnAboutReassigningProps = false;
 }
 
+/**
+ * 创建 workInProgress 的 child fiber
+ *
+ * Child 的 diff 算法
+ *
+ * @export
+ * @param {(Fiber | null)} current
+ * @param {Fiber} workInProgress
+ * @param {*} nextChildren
+ * @param {ExpirationTime} renderExpirationTime
+ */
 export function reconcileChildren(
   current: Fiber | null,
   workInProgress: Fiber,
   nextChildren: any,
   renderExpirationTime: ExpirationTime,
 ) {
-  if (current === null) {
+  if (current === null) { // [comment] 第一次渲染
     // If this is a fresh new component that hasn't been rendered yet, we
     // won't update its child set by applying minimal side-effects. Instead,
     // we will add them all to the child before it gets rendered. That means
@@ -620,7 +631,16 @@ function updateFunctionComponent(
   );
   return workInProgress.child;
 }
-
+/**
+ *
+ *
+ * @param {(Fiber | null)} current
+ * @param {Fiber} workInProgress
+ * @param {*} Component
+ * @param {*} nextProps
+ * @param {ExpirationTime} renderExpirationTime
+ * @returns
+ */
 function updateClassComponent(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -753,6 +773,7 @@ function finishClassComponent(
   const instance = workInProgress.stateNode;
 
   // Rerender
+  // [comment]
   ReactCurrentOwner.current = workInProgress;
   let nextChildren;
   if (
@@ -770,6 +791,7 @@ function finishClassComponent(
       stopProfilerTimerIfRunning(workInProgress);
     }
   } else {
+    // 调用 instance.render 方法
     if (__DEV__) {
       setCurrentPhase('render');
       nextChildren = instance.render();
@@ -1858,6 +1880,14 @@ export function markWorkInProgressReceivedUpdate() {
   didReceiveUpdate = true;
 }
 
+/**
+ * 判断孩子有要处理的任务吗？
+ *
+ * @param {(Fiber | null)} current
+ * @param {Fiber} workInProgress
+ * @param {ExpirationTime} renderExpirationTime
+ * @returns {(Fiber | null)}
+ */
 function bailoutOnAlreadyFinishedWork(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -1889,7 +1919,14 @@ function bailoutOnAlreadyFinishedWork(
     return workInProgress.child;
   }
 }
-
+/**
+ * 开始根据 vDom，更新/创建 fiber
+ *
+ * @param {(Fiber | null)} current
+ * @param {Fiber} workInProgress
+ * @param {ExpirationTime} renderExpirationTime
+ * @returns {(Fiber | null)}
+ */
 function beginWork(
   current: Fiber | null,
   workInProgress: Fiber,
